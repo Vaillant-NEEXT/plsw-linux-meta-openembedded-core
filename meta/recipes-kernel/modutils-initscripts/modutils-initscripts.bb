@@ -19,7 +19,7 @@ do_install () {
 	install -m 0755 ${S}/modutils.sh ${D}${sysconfdir}/init.d/
 }
 
-PACKAGE_WRITE_DEPS:append = " ${@bb.utils.contains('DISTRO_FEATURES','systemd','systemd-systemctl-native','',d)}"
+PACKAGE_WRITE_DEPS:append = " ${@bb.utils.contains('DISTRO_FEATURES','systemd','systemd-tools-native','',d)}"
 pkg_postinst:${PN} () {
 	if type systemctl >/dev/null 2>/dev/null; then
 		if [ -n "$D" ]; then

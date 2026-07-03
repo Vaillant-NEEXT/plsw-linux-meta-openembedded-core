@@ -41,7 +41,7 @@ S = "${UNPACKDIR}"
 KERNEL_VERSION = ""
 
 DEPENDS:append = " update-rc.d-native"
-PACKAGE_WRITE_DEPS:append = " ${@bb.utils.contains('DISTRO_FEATURES','systemd','systemd-systemctl-native','',d)}"
+PACKAGE_WRITE_DEPS:append = " ${@bb.utils.contains('DISTRO_FEATURES','systemd','systemd-tools-native','',d)}"
 
 PACKAGES =+ "${PN}-functions ${PN}-sushell"
 RDEPENDS:${PN} = "initd-functions \

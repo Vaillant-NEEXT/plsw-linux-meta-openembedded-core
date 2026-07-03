@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Turull <daniel.turull@ericsson.com>
+Date: Wed, 25 Jun 2026 10:00:00 +0200
+Subject: [PATCH] hwdb: use compat mode to avoid embedding source paths
+
+Use compat=true in systemd-hwdb's verb_update() so that source
+filenames, line numbers, and priorities are not embedded in hwdb.bin.
+
+Without this, when --root $D is used during cross-compilation, the
+absolute build paths (e.g. /tmp/work/.../rootfs/usr/lib/udev/hwdb.d/...)
+are written into the database, causing:
+- Non-reproducible builds (different TMPDIR → different hwdb.bin)
+- Build directory path leakage into the target image
+
+The compat format matches what udevadm hwdb (the deprecated path)
+has always produced, and is the expected format for cross-built images.
+
+Upstream-Status: Inappropriate [oe specific]
+
+AI-Generated: Claude Opus 4.6
+Signed-off-by: Daniel Turull <daniel.turull@ericsson.com>
+---
+ src/hwdb/hwdb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/src/hwdb/hwdb.c
++++ b/src/hwdb/hwdb.c
+@@ -27,7 +27,7 @@ static int verb_update(int argc, char *argv[], uintptr_t _data, void *userdata)
+         if (hwdb_bypass())
+                 return 0;
+ 
+-        return hwdb_update(arg_root, arg_hwdb_bin_dir, arg_strict, false);
++        return hwdb_update(arg_root, arg_hwdb_bin_dir, arg_strict, true);
+ }
+ 
+ static int help(void) {

@@ -19,7 +19,23 @@ case "${PREFERRED_PROVIDER_udev}" in
 		;;
 esac
 
-rm -f $D${UDEVLIBDIR}/udev/hwdb.bin
-PSEUDO_UNLOAD=1 ${binprefix}qemuwrapper -L $D $D${UDEVADM} hwdb --update --root $D ${UDEV_EXTRA_ARGS} ||
-	PSEUDO_UNLOAD=1 qemuwrapper -L $D $D${UDEVADM} hwdb --update --root $D ${UDEV_EXTRA_ARGS}
-chown root:root $D${UDEVLIBDIR}/udev/hwdb.bin
+hwdb_bin="$D${UDEVLIBDIR}/udev/hwdb.bin"
+rm -f "$hwdb_bin"
+
+# Use native systemd-hwdb to generate hwdb.bin at build time.
+# This avoids QEMU user-mode emulation and works on host kernels < 5.8
+# (e.g. RHEL 8) where systemd 261+ would fail due to missing STATX_MNT_ID.
+NATIVE_HWDB="${STAGING_DIR_NATIVE}/usr/bin/systemd-hwdb"
+if test -x "$NATIVE_HWDB" && test "${PREFERRED_PROVIDER_udev}" = "systemd"; then
+	PSEUDO_UNLOAD=1 $NATIVE_HWDB update --root $D ${UDEV_EXTRA_ARGS}
+else
+	PSEUDO_UNLOAD=1 ${binprefix}qemuwrapper -L $D $D${UDEVADM} hwdb --update --root $D ${UDEV_EXTRA_ARGS} ||
+		PSEUDO_UNLOAD=1 qemuwrapper -L $D $D${UDEVADM} hwdb --update --root $D ${UDEV_EXTRA_ARGS}
+fi
+
+if ! test -s "$hwdb_bin"; then
+	echo "ERROR: hwdb.bin was not created at $hwdb_bin" >&2
+	echo "The hwdb generation command exited successfully but produced no output." >&2
+	exit 1
+fi
+chown root:root "$hwdb_bin"
