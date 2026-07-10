@@ -22,7 +22,6 @@ python __anonymous() {
     # redundant init files.
     if bb.utils.contains('DISTRO_FEATURES', 'systemd', True, False, d):
         d.appendVar("DEPENDS", " systemd-tools-native")
-        d.appendVar("PACKAGE_WRITE_DEPS", " systemd-tools-native")
         d.setVar("INHIBIT_UPDATERCD_BBCLASS", "1")
 }
 

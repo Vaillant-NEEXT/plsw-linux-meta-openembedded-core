@@ -22,6 +22,8 @@ REQUIRED_DISTRO_FEATURES += "systemd"
 # this and hence we can no longer support it
 CONFLICT_DISTRO_FEATURES += "sysvinit"
 
+PACKAGE_WRITE_DEPS += "systemd-tools-native"
+
 SRC_URI += " \
            file://touchscreen.rules \
            file://00-create-volatile.conf \
