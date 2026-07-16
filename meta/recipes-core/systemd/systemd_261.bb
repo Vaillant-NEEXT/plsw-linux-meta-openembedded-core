@@ -917,8 +917,21 @@ PACKAGE_WRITE_DEPS += "qemuwrapper-cross systemd-tools-native"
 
 pkg_postinst:udev-hwdb () {
 	if test -n "$D"; then
-		$INTERCEPT_DIR/postinst_intercept update_udev_hwdb ${PKG} mlprefix=${MLPREFIX} binprefix=${MLPREFIX} \
-			rootlibexecdir="${nonarch_libdir}" PREFERRED_PROVIDER_udev="${PREFERRED_PROVIDER_udev}" base_bindir="${base_bindir}"
+		set -e
+		hwdb_bin="$D${nonarch_libdir}/udev/hwdb.bin"
+		rm -f "$hwdb_bin"
+
+		# Use native systemd-hwdb to generate hwdb.bin at build time.
+		# This avoids QEMU user-mode emulation and works on host kernels < 5.8
+		# (e.g. RHEL 8) where systemd 261+ would fail due to missing STATX_MNT_ID.
+		systemd-hwdb update --root $D --usr
+
+		if ! test -s "$hwdb_bin"; then
+			echo "ERROR: hwdb.bin was not created at $hwdb_bin" >&2
+		        echo "The hwdb generation command exited successfully but produced no output." >&2
+		        exit 1
+		fi
+		chown root:root "$hwdb_bin"
 	else
 		systemd-hwdb update
 	fi
