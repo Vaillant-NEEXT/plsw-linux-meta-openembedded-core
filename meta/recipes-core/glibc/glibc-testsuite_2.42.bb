@@ -21,7 +21,6 @@ do_check:append () {
     chmod 0755 ${UNPACKDIR}/check-test-wrapper
 
     oe_runmake -i \
-        GPROF="${TARGET_PREFIX}gprof" \
         QEMU_SYSROOT="${RECIPE_SYSROOT}" \
         QEMU_OPTIONS="${@qemu_target_binary(d)} ${QEMU_OPTIONS}" \
         SSH_HOST="${TOOLCHAIN_TEST_HOST}" \
