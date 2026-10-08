@@ -35,7 +35,7 @@ CVE_STATUS[CVE-2025-61662] = "fixed-version: fixed since 2.14"
 CVE_STATUS[CVE-2025-61663] = "fixed-version: fixed since 2.14"
 CVE_STATUS[CVE-2025-61664] = "fixed-version: fixed since 2.14"
 
-DEPENDS = "flex-native bison-native gettext-native gawk-replacement-native"
+DEPENDS = "flex-native bison-native gettext-native"
 
 GRUB_COMPATIBLE_HOST = '(x86_64.*|i.86.*|arm.*|aarch64.*|loongarch64.*|riscv.*)-(linux.*|freebsd.*)'
 COMPATIBLE_HOST = "${GRUB_COMPATIBLE_HOST}"

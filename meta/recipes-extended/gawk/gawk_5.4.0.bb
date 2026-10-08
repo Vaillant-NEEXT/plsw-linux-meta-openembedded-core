@@ -49,19 +49,11 @@ ALTERNATIVE:${PN} = "awk"
 ALTERNATIVE_TARGET[awk] = "${bindir}/gawk"
 ALTERNATIVE_PRIORITY = "100"
 
-target_tweaks() {
+do_install:append() {
 	# remove the link since we don't package it
 	rm ${D}${bindir}/awk
 	# Strip non-reproducible build flags (containing build paths)
 	sed -i -e 's|^CC.*|CC=""|g' -e 's|^CFLAGS.*|CFLAGS=""|g' ${D}${bindir}/gawkbug
-}
-
-do_install:append:class-target() {
-	target_tweaks
-}
-
-do_install:append:class-nativesdk() {
-	target_tweaks
 }
 
 inherit ptest
@@ -110,5 +102,4 @@ RDEPENDS:${PN}-ptest += "make locale-base-en-us coreutils"
 RDEPENDS:${PN}-ptest:append:libc-glibc = " locale-base-en-us.iso-8859-1"
 RDEPENDS:${PN}-ptest:append:libc-musl = " musl-locales"
 
-PROVIDES:append:class-native = " gawk-replacement-native"
 BBCLASSEXTEND = "native nativesdk"
